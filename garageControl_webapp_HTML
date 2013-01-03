@@ -1,0 +1,431 @@
+<html>
+<!-- Garage Controler Beta v0.0.6 ( iPad/Web ) -->
+<!--
+        .-.   . - ~|+ - .   .-.
+       / .. \/  .-. .-.  \/ .. \
+      | |  '|  /   Y   \  |'  | |
+      | \   \  \ 0 | 0 /  /   / |
+       \ '- ,\.-"`` ``"-./, -' /
+        `'-' /_   ^ ^   _\ '-'`
+            |  \._   _./  | 
+            \   \ `~` /   /
+             '._ '-=-' _.'
+                '~-_-~'
+      ___       ___   ___       ___
+     |   \     /   | |   \     /   |
+     |    \   /    | |    \   /    |
+     |   .  v  .   | |   .  v  .   |
+     |   |\   /|   | |   |\   /|   |
+     |___| \_/ |___| |___| \_/ |___|
+
+Hello you cheeky code peeker. This was in fact written by Michael McDaniel to control some shit in his workshop. Meta tags are included to allow saving this page to the homescreen of an iOS device so it behaves like a native app. Layout is designed for iPad screen sizes.
+-->
+<head>
+  <title>Garage Controler Layout Test</title>
+  <meta name="viewport" content="user-scalable = no, initial-scale = 1.0,  width = device-width" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta names="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-startup-image" href="common/img/startupScreen_monkey_iPad2.png" />
+  <link rel="apple-touch-icon" href="common/img/monkey_icon_01.png" />
+
+
+<script>
+if(window.ActiveXObject) var ajax = new ActiveXObject('Microsoft.XMLHTTP');
+else var ajax = new XMLHttpRequest();
+// Tell Safari not to move the window.
+function BlockMove(event) {
+event.preventDefault() ;
+}
+// On button click chnage the CSS class (make grey buttons green buttons on click).
+function changeClass(x) {
+  x.className=(x.className=="grey")?"green":(x.className=="green")?"grey":"green";
+  if(x.className=="green") { 
+  //pass number to PHP to write to text file.
+  var status=x;
+  switch (status)
+    {
+      case button1: // Zone 01
+      s="M";
+      break;
+    case button2: // Zone 02
+      s="N";
+      break;
+    case button3: // Zone 03
+      s="O";
+      break;
+    case button4: // Workbench
+      s="P";
+      break;
+    case button5: // All Lighting On & Off
+      s="Q";
+      break;
+    case button6: // (Empty)
+      s="R";
+      break;
+    case button7: // Garage Door 2
+      s="S";
+      break;
+    case button8: // Garage Door 2 Light
+      s="T";
+      break;
+    case button9: // (Empty)
+      s="U";
+      break;
+    case button10: // Main Lighting (Batman pattern)
+      s="V";
+      break;
+    case button11: // Audio & outlet On
+      s="W";
+      break;
+    case button12: // Motion On & Off
+      s="X";
+      break;
+    }
+  } else { 
+    var status=x;
+    switch (status)
+        {
+    case button1: // Zone 01
+      s="A";
+      break;
+    case button2: // Zone 02
+      s="B";
+      break;
+    case button3: // Zone 03
+      s="C";
+      break;
+    case button4: // Workbench
+      s="D";
+      break;
+    case button5: // All Lighting On & Off
+      s="E";
+      break;
+    case button6: // (Empty)
+      s="F";
+      break;
+    case button7: // Garage Door 2
+      s="S";
+      break;
+    case button8: // Garage Door 2 Light
+      s="T";
+      break;
+    case button9: // (Empty)
+      s="I";
+      break;
+    case button10: // Main Lighting (Batman pattern)
+      s="J";
+      break;
+    case button11: // Audio & outlet On
+      s="K";
+      break;
+    case button12: // Motion On & Off
+      s="L";
+      break;
+    }
+  }
+  document.getElementById('content').innerHTML = s;
+  ajax.open('GET', 'led4.php?state='+s, true);  
+  ajax.send(null);  
+}
+</script>
+
+  <style type="text/css">
+    body {
+      font-family: Helvetica, Microsoft Sans Serif, Arial, sans-serif;
+      background-color: #000202;
+      }
+    div#container {
+      margin:0;
+      padding:0;
+      width:1024px;
+      height:768px;
+      }
+    div#location {
+      position:absolute;
+      top: 30px;
+      left: 50px;
+      z-index: 16;
+      }
+    div#temperture {
+      position:absolute;
+      top: 170px;
+      left: 50px;
+      z-index: 16;
+      }
+    div#activity {
+      position:absolute;
+      top: 410px;
+      left: 50px;
+      line-height: 28px;
+      z-index: 16;
+      }
+    #header
+      {
+      font-family:Helvetica;
+      font-size: 20px;
+      font-weight: lighter;
+      letter-spacing: .08em;
+      color:#ffffff;
+      }
+    #large
+      {
+      font-family:Helvetica;
+      font-size: 70px;
+      font-weight: bold;
+      letter-spacing: normal;
+      color:#ffffff;
+      }
+    #largeGlow
+      {
+      font-family:Helvetica;
+      font-size: 70px;
+      font-weight: bold;
+      letter-spacing: normal;
+      color:#ffffff;
+      text-shadow: 0 0 30px #009eb5;
+      }
+    #tempCurrent
+      {
+      position:absolute;
+      top: -10px;
+      font-family:Helvetica;
+      font-size: 90px;
+      font-weight: lighter;
+      letter-spacing: normal;
+      color:#ffffff;
+      text-shadow: 0 0 30px #009eb5;
+      }
+    #tempHigh
+      {
+      position:absolute;
+      top: 90px;
+      font-family:Helvetica;
+      font-size: 55px;
+      font-weight: lighter;
+      letter-spacing: normal;
+      color:#eb8024;
+      }
+    #tempLow
+      {
+      position:absolute;
+      top: 145px;
+      font-family:Helvetica;
+      font-size: 55px;
+      font-weight: lighter;
+      letter-spacing: normal;
+      color:#009eb5;
+      }
+    #tempCurrent2
+      {
+      position:absolute;
+      top: 55px;
+      left: 130px;
+      font-family:Helvetica;
+      font-size: 18px;
+      font-weight: lighter;
+      letter-spacing: normal;
+      color:#ffffff;
+      text-shadow: 0 0 30px #009eb5;
+      }      
+    #tempHigh2
+      {
+      position:absolute;
+      top: 122px;
+      left: 130px;
+      font-family:Helvetica;
+      font-size: 18px;
+      font-weight: lighter;
+      letter-spacing: normal;
+      color:#eb8024;
+      }      
+    #tempLow2
+      {
+      position:absolute;
+      top: 178px;
+      left: 130px;
+      font-family:Helvetica;
+      font-size: 18px;
+      font-weight: lighter;
+      letter-spacing: normal;
+      color:#009eb5;
+      }
+    #recent1
+      {
+      font-family:Helvetica;
+      font-size: 16px;
+      font-weight: lighter;
+      letter-spacing: normal;
+      color:#645c56;
+      }
+    #recent2
+      {
+      font-family:Helvetica;
+      font-size: 16px;
+      font-weight: normal;
+      letter-spacing: normal;
+      color:#383430;
+      }
+    #recent3
+      {
+      font-family:Helvetica;
+      font-size: 16px;
+      font-weight: normal;
+      letter-spacing: normal;
+      color:#272422;
+      }
+    div#status img {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        }
+    #img1 { z-index: 1; }
+    #img2 { z-index: 2; }
+    #img3 { z-index: 3; }
+    #img4 { z-index: 4; }
+    #img5 { z-index: 5; }
+    #img6 { z-index: 6; }
+    #img7 { z-index: 7; }
+    #img8 { z-index: 8; }
+    #img9 { z-index: 9; }
+    #img10 { z-index: 10; }
+    #img11 { z-index: 11; }
+    #img12 { z-index: 12; }
+    #img13 { z-index: 13; }
+    #img14 { z-index: 14; }
+    #img15 { z-index: 15; }
+    div#controls {
+      position:absolute;
+      top: 555px;
+      left: 35px;
+      z-index: 17;
+      }
+
+    #content {
+      position:absolute;
+      top: 35px;
+      left: 500px;
+      font-size: 14px;
+      font-weight: lighter;
+      color: #ffffff;
+      }
+
+    /* This imageless css button was generated by CSSButtonGenerator.com */
+    .green {
+      -webkit-box-shadow:inset 0px 1px 0px 0px #256466;
+      box-shadow:inset 0px 1px 0px 0px #256466;
+      background-color:#1a2930;
+      border:1px solid #165b61;
+      display:inline-block;
+      color:#71c2d6;
+      font-family:Helvetica;
+      font-size:20px;
+      font-weight:lighter;
+      padding:8px 24px;
+      text-decoration:none;
+      text-shadow:0px 0px 14px #124d52;
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle;
+      height: 35px;
+      width: 180px;
+      }
+    .green:hover {
+      background-color:#275466; 
+      }
+    .green:active {
+      position:relative;
+      top:1px;
+    }
+    /* This imageless css button was generated by CSSButtonGenerator.com */
+    .grey {
+      -moz-box-shadow:inset 0px 1px 0px 0px #000000;
+      -webkit-box-shadow:inset 0px 1px 0px 0px #000000;
+      box-shadow:inset 0px 1px 0px 0px #000000;
+      background-color:#000000;
+      border:1px solid #777777;
+      display:inline-block;
+      color:#777777;
+      font-family:Helvetica;
+      font-size:20px;
+      font-weight:lighter;
+      padding:6px 24px;
+      text-decoration:none;
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle;
+      height: 41px;
+      width: 180px;
+      }
+    .grey:hover {
+      background-color:#000000;
+      }
+    .grey:active {
+      position:relative;
+      top:1px;
+      }
+</style>
+</head>
+
+
+
+<body>
+<div id="container">
+  <div id="location">
+      <span id="header">Location:</span></br>
+      <span id="largeGlow">Garage</span>
+  </div>
+  <div id="temperture">
+      <span id="tempCurrent">76&#176</span><span id="tempCurrent2">Current</span></br>
+      <span id="tempHigh">82&#176</span><span id="tempHigh2">High</span></br>
+      <span id="tempLow">64&#176</span><span id="tempLow2">Low</span>
+  </div>
+  <div id="activity">
+     <span id="header">Recent Activity:</span></br>
+     <span id="recent1">Garage Entry 12/28/12 @ 7:45pm</span></br>
+     <span id="recent2">System Activated 12/28/12 @ 7:45pm</span></br>
+     <span id="recent3">Garage Entry 12/28/12 @ 7:45pm</span>
+  </div>
+
+<div id="content">Ready!</div>
+
+  <div id="controls">
+     <table align="center" border="0" cellspacing="2">
+      <tr>
+        <td><div id="button12" class="green" onclick="changeClass(this);">Motion</div></td>
+        <td><div id="button1" class="grey" onclick="changeClass(this);">Zone 01</div></td>
+        <td><div id="button4" class="grey" onclick="changeClass(this);">Workbench</div></td>
+        <td><div id="button7" class="grey" onclick="changeClass(this);">Garage Door 02</div></td>
+      </tr><tr>
+        <td><div id="button10" class="grey" onclick="changeClass(this);">Main Lighting</div></td>
+        <td><div id="button2" class="grey" onclick="changeClass(this);">Zone 02</div></td>
+        <td><div id="button5" class="grey" onclick="changeClass(this);">All On/Off</div></td>
+        <td><div id="button8" class="grey" onclick="changeClass(this);">Garage Door Light</div></td>
+      </tr><tr>
+        <td><div id="button11" class="grey" onclick="changeClass(this);">Audio</div></td>
+        <td><div id="button3" class="grey" onclick="changeClass(this);">Zone 03</div></td>
+        <td><div id="button6" class="grey" onclick="changeClass(this);">Ceiling Fan</div></td>
+        <td><div id="button9" class="grey" onclick="changeClass(this);">Entry Light</div></td>
+      </tr>
+      </table>
+  </div>
+  <div id="status">
+    <img id="img15" src="common/img/status/statusOrb_sensor_header.png">
+    <img id="img14" src="common/img/status/statusOrb_sensor_03_ON.png">
+    <img id="img13" src="common/img/status/statusOrb_sensor_02_ON.png">
+    <img id="img12" src="common/img/status/statusOrb_sensor_01_ON.png">
+    <img id="img11" src="common/img/status/statusOrb_audio_header.png">
+    <img id="img10" src="common/img/status/statusOrb_audio_study_ON.png">
+    <img id="img9" src="common/img/status/statusOrb_audio_garage_ON.png">
+    <img id="img8" src="common/img/status/statusOrb_audio_amp_ON.png">
+    <img id="img7" src="common/img/status/statusOrb_lighting_header.png">
+    <img id="img6" src="common/img/status/statusOrb_lighting_entry_ON.png">
+    <img id="img5" src="common/img/status/statusOrb_lighting_zone4_ON.png">
+    <img id="img4" src="common/img/status/statusOrb_lighting_zone3_ON.png">
+    <img id="img3" src="common/img/status/statusOrb_lighting_zone2_ON.png">
+    <img id="img2" src="common/img/status/statusOrb_lighting_zone1_ON.png">
+    <img id="img1" src="common/img/status/statusOrb_core_ON.png">
+  </div>
+</div>
+  
+</body>
+</html>
