@@ -1,0 +1,170 @@
+/* 
+ A simple Processing script for enabling or disabling the LED on an Arduino using a web interface and serial communication.
+ Author: Sindre Lindstad
+ Created: 19th of January 2011
+ http://projects.sindrelindstad.com
+ //////////////////////////////////
+ Modified by Michael McDaniel on December 28, 2012 to drive garage automation build via web based apps over USB connection to Ardunio.
+ */
+
+import processing.serial.*;
+Serial port;
+
+void setup() {
+
+  /* This part must be altered to fit your local settings. The number in brackets after "Serial.list()" is where you declare what COM port your Arduino is connected to.
+   If you get error messages, try a different number starting from 0 (e.g. 0, 1, 2, 3...) . */
+  port = new Serial(this, Serial.list()[1], 9600);  // Open the port that the Arduino board is connected to, at 9600 baud
+}
+void draw() {
+
+  String onoroff[] = loadStrings("http://www.yourdomain/some_folder/some_folder/text_file.txt"); // Location of text file on the internet
+  print(onoroff[0]);
+
+// Below are conditional statements that take the variable from the server based text file and write it over the serial port to the Ardunio.
+  if (onoroff[0].equals("A") == true) {
+    println(" ");
+    port.write('A');
+  } 
+  else if (onoroff[0].equals("B") == true) {
+    println(" ");
+    port.write('B');
+  } 
+  else if (onoroff[0].equals("C") == true) {
+    println(" ");
+    port.write('C');
+  } 
+  else if (onoroff[0].equals("D") == true) {
+    println(" ");
+    port.write('D');
+  } 
+  else if (onoroff[0].equals("E") == true) {
+    println(" ");
+    port.write('E');
+  }
+  else if (onoroff[0].equals("F") == true) {
+    println(" ");
+    port.write('F');
+  } 
+  else if (onoroff[0].equals("G") == true) {
+    println(" ");
+    port.write('G');
+  }
+  else if (onoroff[0].equals("H") == true) {
+    println(" ");
+    port.write('H');
+  } 
+  else if (onoroff[0].equals("I") == true) {
+    println(" ");
+    port.write('I');
+  }
+  else if (onoroff[0].equals("J") == true) {
+    println(" ");
+    port.write('J');
+  } 
+  else if (onoroff[0].equals("K") == true) {
+    println(" ");
+    port.write('K');
+  }
+  else if (onoroff[0].equals("L") == true) {
+    println(" ");
+    port.write('L');
+  } 
+  else if (onoroff[0].equals("M") == true) {
+    println(" ");
+    port.write('M');
+  }
+  else if (onoroff[0].equals("N") == true) {
+    println(" ");
+    port.write('N');
+  } 
+  else if (onoroff[0].equals("O") == true) {
+    println(" ");
+    port.write('O');
+  }
+  else if (onoroff[0].equals("P") == true) {
+    println(" ");
+    port.write('P');
+  } 
+  else if (onoroff[0].equals("Q") == true) {
+    println(" ");
+    port.write('Q');
+  }
+  else if (onoroff[0].equals("R") == true) {
+    println(" ");
+    port.write('R');
+  } 
+  else if (onoroff[0].equals("S") == true) {
+    println(" ");
+    port.write('S');
+  }
+  else if (onoroff[0].equals("T") == true) {
+    println(" ");
+    port.write('T');
+  } 
+  else if (onoroff[0].equals("U") == true) {
+    println(" ");
+    port.write('U');
+  }
+  else if (onoroff[0].equals("V") == true) {
+    println(" ");
+    port.write('V');
+  } 
+  else if (onoroff[0].equals("W") == true) {
+    println(" ");
+    port.write('W');
+  }
+  else if (onoroff[0].equals("X") == true) {
+    println(" ");
+    port.write('X');
+  } 
+  else if (onoroff[0].equals("Y") == true) {
+    println(" ");
+    port.write('Y');
+  }
+  else if (onoroff[0].equals("Z") == true) {
+    println(" ");
+    port.write('Z');
+  } 
+  else if (onoroff[0].equals("0") == true) {
+    println(" ");
+    port.write('0');
+  }
+  else if (onoroff[0].equals("1") == true) {
+    println(" ");
+    port.write('1');
+  } 
+  else if (onoroff[0].equals("2") == true) {
+    println(" ");
+    port.write('2');
+  }
+  else if (onoroff[0].equals("3") == true) {
+    println(" ");
+    port.write('3');
+  } 
+  else if (onoroff[0].equals("4") == true) {
+    println(" ");
+    port.write('4');
+  }
+  else if (onoroff[0].equals("5") == true) {
+    println(" ");
+    port.write('5');
+  } 
+  else if (onoroff[0].equals("6") == true) {
+    println(" ");
+    port.write('6');
+  }
+  else if (onoroff[0].equals("7") == true) {
+    println(" ");
+    port.write('7');
+  } 
+  else if (onoroff[0].equals("8") == true) {
+    println(" ");
+    port.write('8');
+  }
+  else if (onoroff[0].equals("9") == true) {
+    println(" ");
+    port.write('9');
+  } 
+  delay(500); // Set your desired interval here, in milliseconds, to wait until checking teh text file again.
+}
