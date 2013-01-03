@@ -1,0 +1,388 @@
+/*
+ Garage Master Control v5.0.4
+ ____       ___   ___       ____
+ |   \     /   | |   \     /   |
+ |    \   /    | |    \   /    |
+ |   .  v  .   | |   .  v  .   |
+ |   |\   /|   | |   |\   /|   |
+ |   |  v  |   | |   |  v  |   |
+ |___|     |___| |___|     |___|
+ 
+ Written by Michael McDaniel, Dec. 29, 2012
+ This build successfully runs 4 tasks at the same time: 
+ 1). Cylon status light 
+ 2). Checks temperature 
+ 3). Watches for motion to turn certain lights ON/OFF 
+ 4). Listens for web commands for the relays via USB
+ 
+ !!! Only works on the Uno with Processing. Processing doesn't like the Mega via USB. !!! 
+ */
+
+// INTIALIZE //////////////////////////////////////////////////////////////////////////////
+int incomingByte;     // Var from website controls (currently passed along from processing).
+int pressed = 0;      // Var to ignore the same Byte from the web once it finishes
+int motionState = 0;  // Var to toggle motion on/off with. 0 = ON and 1 = OFF for motion sesnor.
+// RELAYS
+int relayPin1 = 2;    // Garage Door 02 + Garage Opener Lights
+int relayPin2 = 3;    // "Black wire" Workbench lights
+int relayPin3 = 4;    // "White Wire" Outlet
+int relayPin4 = 5;    // Ceiling fan & overhead lights
+int relayPin5 = 6;    // Door light
+int relayPin6 = 7;    // Zone 2 lights
+int relayPin7 = 8;    // Zone 3 lights
+int relayPin8 = 9;    // Zone 1 lights
+// SENSORS
+int tempPin1 = A0;         // Temperature sensor
+int motionPin1 = 11;       // Motion sensor
+int calibrationTime = 30;  // Time for motion sensor calibration
+// CYLON LIGHTS
+int ledPin1 = A5;
+int ledPin2 = A4;
+int ledPin3 = A3;
+int ledPin4 = A2;
+int ledPin5 = A1;
+int ledPin6 = 12;
+// Functions //////////////////////////////////////////////////////////////////////////////
+//---------------------------------
+// Web app control - listening for commands
+void listener(){
+  static int relayCounter = 0;
+  relayCounter = relayCounter + 1;
+
+  if (relayCounter == 20) {
+    if (Serial.available() > 0) {
+      incomingByte = Serial.read();
+
+      if (incomingByte == 'J' && pressed != 'J') { // Main Lighting on pattern
+        pressed = 'J';
+        digitalWrite(relayPin8, HIGH);
+        delay(500);
+        digitalWrite(relayPin6, HIGH); 
+        delay(500);
+        digitalWrite(relayPin7, HIGH);
+        delay(500);
+        digitalWrite(relayPin2, HIGH);
+      }
+      if (incomingByte == 'V' && pressed != 'V') { // Main Lighting off pattern
+        pressed = 'V';
+        digitalWrite(relayPin2, LOW);
+        delay(750);
+        digitalWrite(relayPin7, LOW);
+        delay(750);
+        digitalWrite(relayPin6, LOW);
+        delay(750);
+        digitalWrite(relayPin8, LOW); 
+      }
+      if (incomingByte == 'T' && pressed != 'T') { // Garage Door 2 Light On & Off
+        pressed = 'T';
+        digitalWrite(relayPin1, HIGH);
+        delay(10);
+        digitalWrite(relayPin1, LOW);        
+      }
+      if (incomingByte == 'S' && pressed != 'S') { // Garage Door 2 Open & Close
+        pressed = 'S';
+        digitalWrite(relayPin1, HIGH);
+        delay(250);
+        digitalWrite(relayPin1, LOW); 
+      }
+      if (incomingByte == 'X' && pressed != 'X') { // Motion Sensor Off
+        pressed = 'X';
+        motionState = 1; // Turn motion sensor OFF
+        Serial.println("Motion detection has been disabled, sir."); 
+      }
+      if (incomingByte == 'L' && pressed != 'L') { // Motion Sensor On
+        pressed = 'L';
+        motionState = 0; // Turn motion sensor ON 
+        Serial.println("Motion detection has been activated."); 
+      }
+      if (incomingByte == 'A' && pressed != 'A') { // Zone 01 On 
+        pressed = 'A';
+        digitalWrite(relayPin8, HIGH);    
+      }
+      if (incomingByte == 'M' && pressed != 'M') { // Zone 01 Off
+        pressed = 'M';
+        digitalWrite(relayPin8, LOW);
+      }
+      if (incomingByte == 'B' && pressed != 'B') { // Zone 02 On
+        pressed = 'B';
+        digitalWrite(relayPin6, HIGH);    
+      }
+      if (incomingByte == 'N' && pressed != 'N') { // Zone 02 Off
+        pressed = 'N';
+        digitalWrite(relayPin6, LOW);
+      }
+      if (incomingByte == 'C' && pressed != 'C') { // Zone 03 On
+        pressed = 'C';
+        digitalWrite(relayPin7, HIGH);    
+      }
+      if (incomingByte == 'O' && pressed != 'O') { // Zone 03 Off
+        pressed = 'O';
+        digitalWrite(relayPin7, LOW);
+      }
+      if (incomingByte == 'D' && pressed != 'D') { // Workbench On
+        pressed = 'D';
+        digitalWrite(relayPin2, HIGH);    
+      }
+      if (incomingByte == 'P' && pressed != 'P') { // Workbench Off
+        pressed = 'P';
+        digitalWrite(relayPin2, LOW);
+      }
+      if (incomingByte == 'E' && pressed != 'E') { // All Lighting On
+        pressed = 'E';
+        digitalWrite(relayPin6, HIGH);    
+        digitalWrite(relayPin7, HIGH);    
+        digitalWrite(relayPin8, HIGH);    
+        digitalWrite(relayPin2, HIGH);    
+        digitalWrite(relayPin5, HIGH);        
+      }
+      if (incomingByte == 'Q' && pressed != 'Q') { // All Lighting Off
+        pressed = 'Q';
+        digitalWrite(relayPin6, LOW);    
+        digitalWrite(relayPin7, LOW);    
+        digitalWrite(relayPin8, LOW);    
+        digitalWrite(relayPin2, LOW);    
+        digitalWrite(relayPin5, LOW);
+      }
+      if (incomingByte == 'F' && pressed != 'F') { // Ceiling fan On - button 6
+        pressed = 'F';
+        digitalWrite(relayPin4, HIGH);    
+      }
+      if (incomingByte == 'R' && pressed != 'R') { // Ceiling Fan Off - button 6
+        pressed = 'R';
+        digitalWrite(relayPin4, LOW);
+      }
+      if (incomingByte == 'I' && pressed != 'I') { // Entry Light On - button 9
+        pressed = 'I';
+        digitalWrite(relayPin5, HIGH);    
+      }
+      if (incomingByte == 'U' && pressed != 'U') { // Entry Light Off - button 9
+        pressed = 'U';
+        digitalWrite(relayPin5, LOW);
+      }
+      if (incomingByte == 'K' && pressed != 'K') { // Audio On
+        pressed = 'K';
+        digitalWrite(relayPin3, HIGH);    
+      }
+      if (incomingByte == 'W' && pressed != 'W') { // Audio Off
+        pressed = 'W';
+        digitalWrite(relayPin3, LOW);
+      }
+      if (incomingByte == 'Y' && pressed != 'Y') { // UNUSED
+        pressed = 'Y';
+        //digitalWrite(relayPin2, LOW);
+      }
+      if (incomingByte == 'Z' && pressed != 'Z') { // UNUSED
+        pressed = 'Z';
+        //digitalWrite(relayPin2, LOW);
+      }
+      if (incomingByte == '0' && pressed != '0') { // UNUSED
+        pressed = '0';
+        //digitalWrite(relayPin2, LOW);
+      }
+      if (incomingByte == '1' && pressed != '1') { // UNUSED
+        pressed = '1';
+        //digitalWrite(relayPin2, LOW);
+      }
+      if (incomingByte == '2' && pressed != '2') { // UNUSED
+        pressed = '2';
+        //digitalWrite(relayPin2, LOW);
+      }
+      if (incomingByte == '3' && pressed != '3') { // UNUSED
+        pressed = '3';
+        //digitalWrite(relayPin2, LOW);
+      }
+      if (incomingByte == '4' && pressed != '4') { // UNUSED
+        pressed = '4';
+        //digitalWrite(relayPin2, LOW);
+      }
+      if (incomingByte == '5' && pressed != '5') { // UNUSED
+        pressed = '5';
+        //digitalWrite(relayPin2, LOW);
+      }
+      if (incomingByte == '6' && pressed != '6') { // UNUSED
+        pressed = '6';
+        //digitalWrite(relayPin2, LOW);
+      }
+      if (incomingByte == '7' && pressed != '7') { // UNUSED
+        pressed = '7';
+        //digitalWrite(relayPin2, LOW);
+      }
+      if (incomingByte == '8' && pressed != '8') { // UNUSED
+        pressed = '8';
+        //digitalWrite(relayPin2, LOW);
+      }
+      if (incomingByte == '9' && pressed != '9') { // UNUSED
+        pressed = '9';
+        //digitalWrite(relayPin2, LOW);
+      }
+    } 
+    relayCounter = 0;
+  }  
+}
+//---------------------------------
+// Temp sensor reporting
+void readTemp(){
+  static int tempCounter = 0;
+  tempCounter = tempCounter + 1;
+
+  if (tempCounter == 1000) {
+    int valT;
+    int dat;
+    int temp;
+    valT=analogRead(0);       // LM35 conected on Analog 0
+    dat=(500*valT)>>10;
+    temp=(dat * 9 / 5 +32);   // Converts C to F
+    Serial.println("---");
+    Serial.print("Temp: ");   // Display the temperature on Serial monitor
+    Serial.print(temp);
+    Serial.println("F");
+    tempCounter = 0;
+  }
+}
+//---------------------------------
+// Motion sensor to trigger lighting
+void motion() {
+  static int motionCounter = 0;
+  static byte motion = 0;               // Motion sensor output
+  static boolean seenMotion = false;    // Motion sensor state
+  static boolean changeState = false;   // Motin seen, start the motionTimer
+  static int motionTimer = 0;
+  static int timer = 150;               // How many cycles to keep the lights on for.
+  motionCounter = motionCounter + 1;
+  
+  if(motionCounter >= 20) {
+    motion = digitalRead(motionPin1);   // Read motion sensor
+      if(changeState == true) {         // Timer for lighting
+      motionTimer = motionTimer + 1;
+    }
+    if(motion == HIGH) { //Motion seen
+      digitalWrite(relayPin5, HIGH);
+      changeState = true;
+      if(seenMotion == false) {
+        Serial.println("---");
+        Serial.println("Motion detected.");
+        seenMotion = true;       
+      }
+    }
+    else {
+      if(seenMotion == true) { //Motion stopped
+        Serial.println(motionTimer);
+        if(motionTimer >= timer) {
+          digitalWrite(relayPin5, LOW);
+          Serial.println("---");
+          Serial.println("Motion stopped.");
+          Serial.println(motionTimer);
+          motionTimer = 0;
+          seenMotion = false;
+          changeState = true;
+        }
+      }
+    }
+    motionCounter = 0;
+  }
+}
+//---------------------------------
+// Cylon style status light for control box fx
+void cylon(){
+  static int cylonCounter = 0;
+  cylonCounter = cylonCounter + 1;
+
+  if (cylonCounter == 10) {
+    digitalWrite(ledPin1, HIGH);
+  }
+  if (cylonCounter == 20) {
+    digitalWrite(ledPin1, LOW);
+    digitalWrite(ledPin2, HIGH);
+  }
+  if (cylonCounter == 30) {
+    digitalWrite(ledPin2, LOW);
+    digitalWrite(ledPin3, HIGH);
+  }
+  if (cylonCounter == 40) {
+    digitalWrite(ledPin3, LOW);
+    digitalWrite(ledPin4, HIGH);
+  }
+  if (cylonCounter == 50) {
+    digitalWrite(ledPin4, LOW);
+    digitalWrite(ledPin5, HIGH);
+  }
+  if (cylonCounter == 60) {
+    digitalWrite(ledPin5, LOW);
+    digitalWrite(ledPin6, HIGH);
+  }
+  if (cylonCounter == 75) {
+    digitalWrite(ledPin6, LOW);
+    digitalWrite(ledPin5, HIGH);
+  }
+  if (cylonCounter == 85) {
+    digitalWrite(ledPin5, LOW);
+    digitalWrite(ledPin4, HIGH);
+  }
+  if (cylonCounter == 95) {
+    digitalWrite(ledPin4, LOW);
+    digitalWrite(ledPin3, HIGH);
+  }  
+  if (cylonCounter == 105) {
+    digitalWrite(ledPin3, LOW);
+    digitalWrite(ledPin2, HIGH);
+  }
+  if (cylonCounter == 115) {
+    digitalWrite(ledPin2, LOW);
+    digitalWrite(ledPin1, HIGH);
+  }
+  if (cylonCounter == 120) {
+    cylonCounter = 0;
+  } 
+}
+// SETUP //////////////////////////////////////////////////////////////////////////////
+void setup() {
+  Serial.begin(9600); 
+
+  pinMode(tempPin1, INPUT);
+  pinMode(motionPin1, INPUT);
+  pinMode(relayPin1, OUTPUT);
+  pinMode(relayPin2, OUTPUT);
+  pinMode(relayPin3, OUTPUT);
+  pinMode(relayPin4, OUTPUT);
+  pinMode(relayPin5, OUTPUT);
+  pinMode(relayPin6, OUTPUT);
+  pinMode(relayPin7, OUTPUT);
+  pinMode(relayPin8, OUTPUT);
+
+  pinMode(ledPin1, OUTPUT);
+  pinMode(ledPin2, OUTPUT);
+  pinMode(ledPin3, OUTPUT);
+  pinMode(ledPin4, OUTPUT);     
+  pinMode(ledPin5, OUTPUT);
+
+  digitalWrite(motionPin1, LOW); 
+  digitalWrite(relayPin1, HIGH);
+  digitalWrite(relayPin2, HIGH);
+  digitalWrite(relayPin3, HIGH);
+  digitalWrite(relayPin4, HIGH);
+  digitalWrite(relayPin5, LOW);     // Change to HIGH for garage build with real relays
+  digitalWrite(relayPin6, HIGH);
+  digitalWrite(relayPin7, HIGH);
+  digitalWrite(relayPin8, HIGH);  
+
+  //give the sensor some time to calibrate
+  Serial.println("---");
+  Serial.print("Calibrating sensor ");
+  for(int i = 0; i < calibrationTime; i++) {
+    Serial.print(".");
+  }
+  Serial.println(" Calibration complete.");
+  Serial.println("---");
+  Serial.println("Good Morning, Sir.");
+  Serial.println("All systems are operational and at your command.");
+  delay(50);
+}
+// TCB //////////////////////////////////////////////////////////////////////////////
+void loop ()
+{
+  cylon();      // Cylon style status light
+  readTemp();   // Checks temperature
+  motion();     // Watches for motion to turn certain lights ON/OFF
+  listener();   // Listens for web commands for the relays via USB
+  delay(10);
+}
